@@ -1,173 +1,85 @@
-// Surname     | Firstname | Contribution % | Any issues?
-// =====================================================
-// Person 1... |           | 25%
-// Person 2... |           | 25%
-// Person 3... |           | 25%
-// Person 4... |           | 25%
-//
-// complete Worksheet 2 by entering code in the places marked below...
-//
-// For full instructions and tests open the file worksheetChecklist.html
-// in Chrome browser.  Keep it open side-by-side with your editor window.
-// You will edit this file (main.js), save it, and reload the
-// browser window to run the test.
+/*****************************************************************
+ * Exercise 2: implement the map function for the cons list below
+ */
 
 /**
- * Exercise 1
+ * A ConsList is either a function created by cons, or empty (null)
  */
- let myObj = new Object();
- myObj.aProperty = "Apple";
- myObj.anotherProperty = 14;
- 
- //console.log(myObj);
- 
- /**
-  * Exercise 2
-  */
- 
-  const operationOnTwoNumbers = function(f) {
-     return function(x) {
-         return function(y) {
-             return f(x,y);
-         };
-     };
- };
- 
- //const add = operationOnTwoNumbers((x,y) => x + y)
- //const addNine = add(9)(3)
- //console.log(addNine)
- 
- /**
-  * Exercise 3
-  */
- 
- function callEach(array){
-     array.forEach(element => {
-         element();
-     });
- }
- 
- //const fn1 = _ => console.log("Hey!");
- //const fn2 = _ => console.log("Cool!");
- //callEach([fn1, fn2]);
- 
- /**
-  * Exercise 4
-  */
- function addN(n, array){
-    const add = operationOnTwoNumbers((x,y) => x + y);
-     let arr = [];
-     array.map(value => {
-         arr.push(add(value)(n));
-     });
-     return arr;
- }
- 
- function getEvens(array){
-     let arr = [];
-     array.filter(value => {
-         if(value % 2 === 0){
-             arr.push(value);
-         }    
-     });
-     return arr;
- }
+type ConsList<T> = Cons<T> | null;
 
- function multiplyArray(array){
-     let product = 1;
-     array.map(value =>{
-        if(value !== 0){
-            product *= value;
-        }
-     });
-     return product;
- }
- //const result2 = multiplyArray(10);
- //console.log(result2);
- 
- /**
-  * Exercise 5
-  */
-function range(n){
-    let i = n - 1;
-    if (i >= 0) {
-       return range(i).concat(i);
-    } else {
-       return [];
+/**
+ * The return type of the cons function, is itself a function
+ * which can be given a selector function to pull out either the head or rest
+ */
+type Cons<T> = (selector: Selector<T>) => T | ConsList<T>;
+
+/**
+ * a selector will return either the head or rest
+ */
+type Selector<T> = (head: T, rest: ConsList<T>) => T | ConsList<T>;
+
+/**
+ * cons "constructs" a list node, if no second argument is specified it is the last node in the list
+ */
+function cons<T>(head: T, rest: ConsList<T>): Cons<T> {
+  return (selector: Selector<T>) => selector(head, rest);
+}
+
+/**
+ * head selector, returns the first element in the list
+ * @param list is a Cons (note, not an empty ConsList)
+ */
+function head<T>(list: Cons<T>): T {
+  if (!list) throw new TypeError("list is null");
+  return <T>list((head, rest?) => head);
+}
+
+/**
+ * rest selector, everything but the head
+ * @param list is a Cons (note, not an empty ConsList)
+ */
+function rest<T>(list: Cons<T>): ConsList<T> {
+  if (!list) throw new TypeError("list is null");
+  return <Cons<T>>list((head, rest?) => rest);
+}
+
+/**
+ * Use this as an example for other functions!
+ * @param f Function to use for each element
+ * @param list Cons list
+ */
+function forEach<T>(f: (_: T) => void, list: ConsList<T>): void {
+  if (list) {
+    f(head(list));
+    forEach(f, rest(list));
   }
 }
-//console.log(range(5));
- 
- /**
-  * Exercise 6
-  */
- function Euler1(){
-    return range(1000).filter(item => item % 3 === 0 || item % 5 === 0)
-    .reduce((result, item) => { 
-        return result + item;
-    }, 0);
- }
- const result3 = Euler1;
- console.log(result3);
- 
- /**
-  * Exercise 7
-  */
-  function infinite_series_calculator(accumulate){
-        return function(predicate){
-            return function(transform){
-                return function(n){
-                    return range(n)
-                    .filter(x => predicate(x))
-                    .map(x => transform(x))
-                    .reduce((acc,x) => accumulate(acc, x))
-                }
-            }
-        }
+
+/**
+ * Implement this function! Also, complete this documentation (see forEach).
+ */
+function map<T, V>(f: (_: T) => V, l: ConsList<T>): ConsList<V> {
+  return IMPLEMENT_THIS;
 }
 
- 
- /**
-  * Exercise 8
-  */
- function calculatePiTerm(n){
-    return(4*n**2)/(4*n**2 - 1);
- }
+/*
+Requirements: 
++ First map with id function or I-Combinator 
+Example: 
+let list123 = cons(1, cons(2, cons(3, null)));
+let idList = map((v) => v, list123);
+expect(head(list123)).to.equal(head(idList));
+expect(head(rest(list123))).to.equal(head(rest(idList)));
+expect(head(rest(rest(list123)))).to.equal(head(rest(rest(idList))));
 
- function skipZero(n){
-    return n !== 0;
- }
-
- function productAccumulate(x,y){
-    return x * y;
- }
- 
- function calculatePi(n){
-    
- }
- /**
-  * Exercise 9
-  */
- function factorial(n){
-    if(n === 0){
-        return 1;
-    }else{
-        return n * factorial(n - 1);
-    }
- }
-
- function calculateETerm(n){
-    return 2*(n + 1)/ factorial(2n + 1)
- }
-
- function sumAccumulate(x, y){
-    return x + y;
- }
-
- function alwaysTrue(){
-    return true;
- }
- 
- /**
-  * Exercise 10
-  */
+Then map with inc function
+Example:
+let list123 = cons(1, cons(2, cons(3, null)));
+const inc = (n) => n + 1;
+let newList = map(inc, list123);
+const predicate = (before, after) => before === after - 1;
+expect(predicate(head(list123), head(newList))).is.true;
+expect(predicate(head(rest(list123)), head(rest(newList))));
+expect(predicate(head(rest(rest(list123))), head(rest(rest(newList)))));
+expect(rest(rest(rest(newList)))).is.equal(null);
+*/
