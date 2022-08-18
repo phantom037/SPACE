@@ -1,6 +1,66 @@
+/**
+ * Surname     | Firstname | Contribution % | Any issues?
+ * =====================================================
+ * Person 1... |           | 25%            |
+ * Person 2... |           | 25%            |
+ * Person 3... |           | 25%            |
+ * Person 4... |           | 25%            |
+ *
+ * Please do not hesitate to contact your tutors if there are
+ * issues that you cannot resolve within the group.
+ *
+ * Complete the worksheet by entering code in the places marked below...
+ *
+ * For full instructions and tests open the file worksheetChecklist.html
+ * in Chrome browser.  Keep it open side-by-side with your editor window.
+ * You will edit this file, save it, compile it, and reload the
+ * browser window to run the test.
+ */
+
+// Stub value to indicate an implementation
+const IMPLEMENT_THIS: any = undefined;
+
+/*****************************************************************
+ * Exercise 1
+ */
+
+function addStuff(a: number, b: number) {
+  return a + b;
+}
+function numberToString(input: String) {
+  return JSON.stringify(input);
+}
+
+/**
+ * Takes a string and adds "padding" to the left.
+ * If 'padding' is a string, then 'padding' is appended to the left side.
+ * If 'padding' is a number, then that number of spaces is added to the left side.
+ */
+function padLeft(value: string, padding: unknown) {
+  if (typeof padding === "number") {
+    return Array(padding + 1).join(" ") + value;
+  }
+  if (typeof padding === "string") {
+    return padding + value;
+  }
+  throw new Error(`Expected string or number, got '${padding}'.`);
+}
+
+padLeft("Hello world", 4); // returns "    Hello world"
+
+// What's the type of arg0 and arg1?
+function curry(f: Function) {
+  return function (x: number) {
+    return function (y: number) {
+      return f(x, y);
+    };
+  };
+}
+
 /*****************************************************************
  * Exercise 2: implement the map function for the cons list below
  */
+
 
 /**
  * A ConsList is either a function created by cons, or empty (null)
@@ -59,27 +119,342 @@ function forEach<T>(f: (_: T) => void, list: ConsList<T>): void {
  * Implement this function! Also, complete this documentation (see forEach).
  */
 function map<T, V>(f: (_: T) => V, l: ConsList<T>): ConsList<V> {
-  return IMPLEMENT_THIS;
+  if(l){
+    return <ConsList<V>> (
+      cons<V>( f(head(l)),
+      map(f,rest(l)))
+    )
+  }
+  return null;
 }
 
-/*
-Requirements: 
-+ First map with id function or I-Combinator 
-Example: 
-let list123 = cons(1, cons(2, cons(3, null)));
-let idList = map((v) => v, list123);
-expect(head(list123)).to.equal(head(idList));
-expect(head(rest(list123))).to.equal(head(rest(idList)));
-expect(head(rest(rest(list123)))).to.equal(head(rest(rest(idList))));
+/*****************************************************************
+ * Exercise 3
+ */
 
-Then map with inc function
-Example:
+// Example use of reduce
+function countLetters(stringArray: string[]): number {
+  const list = fromArray(stringArray);
+  return reduce((len: number, s: string) => len + s.length, 0, list);
+}
+
+
+function fromArray<T>(arr: T[]): ConsList<T>{
+  if(arr.length !== 0){
+    return <ConsList<T>> (
+      cons<T>(arr[0], fromArray(arr.slice(1)))
+    )
+  }
+  return null;
+}
+console.log(head(fromArray(["Hello", "there!"])))
+
+//reduce(f: (accumulator:V, t:T)=> V, initialValue: V): V
+//1 -> 2 -> 3 ,0
+//1+2+3
+function reduce<T,V>(f: (accumulator: V, t: T) => V, inital: V ,list: ConsList<T>): V{
+  if(list){
+    const temp = f(inital, head(list))
+    return reduce(f, temp, rest(list));
+  }
+  return inital;
+}
+
+//9
+///1 -> 2 -> 3 -> null
+//3+2+1, inital value = 4
+function reduceRight<T,V>(f: (accumulator: V, t: T) => V, inital: V ,list: ConsList<T>): V{
+  // if(list){
+  //   const temp = f(inital, head(list))
+  //   return reduceRight(f, inital, rest(list));
+  // }
+  // return inital;
+
+  let temp = reverse(list);
+  return reduce(f, inital, temp);
+}
+
+let list1234 = cons(1, cons(2, cons(3, null)));
+console.log(reduceRight(
+  (x, y) => {
+    //console.log(x, y);
+    return x + y;
+  },0,list1234)
+);
+
+function filter<T>(f: (_: T) => T,list: ConsList<T>): Cons<T>{
+  if(list){
+      if(f(head(list))){
+          return cons<T>(head(list), filter(f, rest(list)));
+      }else{
+          return filter(f, rest(list));
+      }
+  }
+  return null;
+}
+//list1 = 1 -> 2   list2 = 3 -> 4
+//1 - 2  
+// 
+function concat<T>(list1: ConsList<T>, list2: ConsList<T>): ConsList<T>{
+  //let result = list1 + list2;
+  //Cons(1,Cons(2,null))
+  //Cons(2,Cons(3,Cons(4,null)))
+  if(list1){
+    return cons<T>(head(list1), concat(rest(list1), list2));
+  }
+  return list2;
+}
+
 let list123 = cons(1, cons(2, cons(3, null)));
-const inc = (n) => n + 1;
-let newList = map(inc, list123);
-const predicate = (before, after) => before === after - 1;
-expect(predicate(head(list123), head(newList))).is.true;
-expect(predicate(head(rest(list123)), head(rest(newList))));
-expect(predicate(head(rest(rest(list123))), head(rest(rest(newList)))));
-expect(rest(rest(rest(newList)))).is.equal(null);
-*/
+
+function reverse<T>(list: ConsList<T>): ConsList<T>{
+  // let arr:T[] = [];
+  //  if(list){
+  //   arr.unshift(head(list)); 
+  //   if(rest(list)){
+  //     return reverse(rest(list));
+  //   }
+  //  }
+  const arr = convertListToArray(list);
+  return fromArray(arr.reverse()); 
+}
+
+function convertListToArray<T>(node: ConsList<T>): T[] {
+  let curNode = node;
+  const values: T[] = [];
+  while (curNode !== null) {
+    values.push(head<T>(curNode));
+    curNode = rest<T>(curNode);
+  }
+  return values;
+}
+
+
+let supTemp = reverse(list123);
+console.log("start here");
+console.log(head(supTemp))
+console.log(head((rest(supTemp))))
+console.log(head(rest(rest(supTemp))))
+
+
+// function reduceRight(f: (length: any, text: any, index?: number) => any, inital: any ,list: ConsList<any>): number{
+//   let internalIndex = -1;
+//   function internalReduce(f: (length: any, text: any, index?: number) => number, internalInitial: number ,list: ConsList<string>):number {
+//     if(!list ) return internalInitial;
+    
+//     const currentNodeValue = head(list);
+//     internalIndex += 1;
+//     const value = f.bind(null, internalInitial, currentNodeValue, internalIndex)();
+//     return internalReduce(f, value, rest(list));
+//   }
+//   const result = internalReduce(f, inital, list);
+//   return result;
+// }
+
+// let list123 = cons(1, cons(2, cons(3, null)));
+// console.log(reduce(
+//   (x, y) => {
+//     console.log(x, y);
+//     return x + y;
+//   },
+//   0,
+//   list123
+// ));
+
+/*****************************************************************
+ * Exercise 4
+ * 
+ * Tip: Use the functions in exercise 3!
+ */
+
+/**
+ * A linked list backed by a ConsList
+ */
+class List<T> {
+  private readonly head: ConsList<T>;
+
+  constructor(list: T[] | ConsList<T>) {
+    if (list instanceof Array) {
+        //this.head
+      // IMPLEMENT THIS. What goes here ??
+    } else {
+      // nullish coalescing operator
+      // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Nullish_coalescing_operator
+      this.head = list ?? null;
+    }
+  }
+
+  /**
+   * create an array containing all the elements of this List
+   */
+  toArray(): T[] {
+    // Getting type errors here?
+    // Make sure your type annotation for reduce()
+    // in Exercise 3 is correct!
+    if ([]) throw new TypeError("list is null");
+    return reduce((a, t) => [...a, t], <T[]>[], this.head);
+  }
+
+  // Add methods here:
+}
+
+// /*****************************************************************
+//  * Exercise 5
+//  */
+function line(s: string): any[]{
+  return [0, s];
+}
+
+ function lineToList(line: [number, string]): List<[number, string]>{
+  let result = new List<[number, string]>(line);
+  return result;
+}
+
+/*****************************************************************
+ * Exercise 6
+ */
+
+type BinaryTree<T> = BinaryTreeNode<T> | undefined;
+
+class BinaryTreeNode<T> {
+  constructor(
+    public readonly data: T,
+    public readonly leftChild?: BinaryTree<T>,
+    public readonly rightChild?: BinaryTree<T>
+  ) {}
+}
+
+// example tree:
+const myTree = new BinaryTreeNode(
+  1,
+  new BinaryTreeNode(2, new BinaryTreeNode(3)),
+  new BinaryTreeNode(4)
+);
+
+// *** uncomment the following code once you have implemented List and nest function (above) ***
+
+// function prettyPrintBinaryTree<T>(node: BinaryTree<T>): List<[number, string]> {
+//     if (!node) {
+//         return new List<[number, string]>([])
+//     }
+//     const thisLine = lineToList(line(node.data.toString())),
+//           leftLines = prettyPrintBinaryTree(node.leftChild),
+//           rightLines = prettyPrintBinaryTree(node.rightChild);
+//     return thisLine.concat(nest(1, leftLines.concat(rightLines)))
+// }
+
+// const output = prettyPrintBinaryTree(myTree)
+//                     .map(aLine => new Array(aLine[0] + 1).join('-') + aLine[1])
+//                     .reduce((a,b) => a + '\n' + b, '').trim();
+// console.log(output);
+
+// /*****************************************************************
+//  * Exercise 7: Implement prettyPrintNaryTree, which takes a NaryTree as input
+//  * and returns a list of the type expected by your nest function
+//  */
+
+// class NaryTree<T> {
+//   constructor(
+//     public data: T,
+//     public children: List<NaryTree<T>> = new List(undefined)
+//   ) {}
+// }
+
+// // Example tree for you to print:
+// const naryTree = new NaryTree(
+//   1,
+//   new List([
+//     new NaryTree(2),
+//     new NaryTree(3, new List([new NaryTree(4)])),
+//     new NaryTree(5),
+//   ])
+// );
+
+// // Implement: function prettyPrintNaryTree(...)
+// function prettyPrintNaryTree<T>(node: NaryTree<T>): List<[number, string]> {
+//   return IMPLEMENT_THIS;
+// }
+
+// // *** uncomment the following code once you have implemented prettyPrintNaryTree (above) ***
+// //
+// // const outputNaryTree = prettyPrintNaryTree(naryTree)
+// //                     .map(aLine => new Array(aLine[0] + 1).join('-') + aLine[1])
+// //                     .reduce((a,b) => a + '\n' + b, '').trim();
+// // console.log(outputNaryTree);
+
+// /*****************************************************************
+//  * Exercise 8 (Supplementary)
+//  */
+
+// type jsonTypes =
+//   | Array<jsonTypes>
+//   | { [key: string]: jsonTypes }
+//   | string
+//   | boolean
+//   | number
+//   | null;
+
+// const jsonPrettyToDoc: (json: jsonTypes) => List<[number, string]> = (json) => {
+//   if (Array.isArray(json)) {
+//     // Handle the Array case.
+//   } else if (typeof json === "object" && json !== null) {
+//     // Handle the object case.
+//     // Hint: use Object.keys(json) to get a list of
+//     // keys that the object has.
+//   } else if (typeof json === "string") {
+//     // Handle string case.
+//   } else if (typeof json === "number") {
+//     // Handle number
+//   } else if (typeof json === "boolean") {
+//     // Handle the boolean case
+//   } else if (json === null) {
+//     // Handle the null case
+//   }
+
+//   // Default case to fall back on.
+//   return new List<[number, string]>([]);
+// };
+
+// // *** uncomment the following code once you are ready to test your implemented jsonPrettyToDoc ***
+// // const json = {
+// //     unit: "FIT2102",
+// //     year: 2021,
+// //     semester: "S2",
+// //     active: true,
+// //     assessments: {"week1": null as null, "week2": "Tutorial 1 Exercise", "week3": "Tutorial 2 Exercise"},
+// //     languages: ["Javascript", "Typescript", "Haskell", "Minizinc"]
+// // }
+// //
+// // function lineIndented(aLine: [number, string]): string {
+// //     return new Array(aLine[0] + 1).join('    ') + aLine[1];
+// // }
+// //
+// // function appendLine(acc: string, nextLine: string): string {
+// //     return nextLine.slice(-1) === "," ? acc + nextLine.trim() :
+// //            acc.slice(-1) === ":"      ? acc + " " + nextLine.trim() :
+// //            acc + '\n' + nextLine;
+// // }
+// //
+// // console.log(jsonPrettyToDoc(json)
+// //               .map(lineIndented)
+// //               .reduce(appendLine, '').trim());
+
+// // *** This is what it should look like in the console ***
+// //
+// // {
+// //     unit: FIT2102,
+// //     year: 2021,
+// //     semester: S2,
+// //     active: true,
+// //     assessments: {
+// //         week1: null,
+// //         week2: Tutorial 1 Exercise,
+// //         week3: Tutorial 2 Exercise
+// //     },
+// //     languages: [
+// //         Javascript,
+// //         Typescript,
+// //         Haskell,
+// //         Minizinc
+// //     ]
+// // }
