@@ -1,10 +1,10 @@
 /**
  * Surname     | Firstname | Contribution % | Any issues?
  * =====================================================
- * Person 1... |           | 25%            |
- * Person 2... |           | 25%            |
- * Person 3... |           | 25%            |
- * Person 4... |           | 25%            |
+// Person 1... | Nail          | 33.3%
+// Person 2... | Thanh          | 33.3%
+// Person 3... | Arian    | 33.3%
+ * 
  *
  * Please do not hesitate to contact your tutors if there are
  * issues that you cannot resolve within the group.
@@ -16,6 +16,7 @@
  * You will edit this file, save it, compile it, and reload the
  * browser window to run the test.
  */
+
 
 // Stub value to indicate an implementation
 const IMPLEMENT_THIS: any = undefined;
@@ -138,7 +139,6 @@ function countLetters(stringArray: string[]): number {
   return reduce((len: number, s: string) => len + s.length, 0, list);
 }
 
-
 function fromArray<T>(arr: T[]): ConsList<T>{
   if(arr.length !== 0){
     return <ConsList<T>> (
@@ -147,11 +147,7 @@ function fromArray<T>(arr: T[]): ConsList<T>{
   }
   return null;
 }
-console.log(head(fromArray(["Hello", "there!"])))
 
-//reduce(f: (accumulator:V, t:T)=> V, initialValue: V): V
-//1 -> 2 -> 3 ,0
-//1+2+3
 function reduce<T,V>(f: (accumulator: V, t: T) => V, inital: V ,list: ConsList<T>): V{
   if(list){
     const temp = f(inital, head(list))
@@ -160,27 +156,20 @@ function reduce<T,V>(f: (accumulator: V, t: T) => V, inital: V ,list: ConsList<T
   return inital;
 }
 
-//9
-///1 -> 2 -> 3 -> null
-//3+2+1, inital value = 4
-function reduceRight<T,V>(f: (accumulator: V, t: T) => V, inital: V ,list: ConsList<T>): V{
-  // if(list){
-  //   const temp = f(inital, head(list))
-  //   return reduceRight(f, inital, rest(list));
-  // }
-  // return inital;
+let list123 = cons(1, cons(2, cons(3, cons(9, null))));
+console.log(reduce(
+  (x, y) => {
+    //console.log(x, y);
+    return y-x;
+  },
+  0,
+  list123
+));
 
+function reduceRight<T,V>(f: (accumulator: V, t: T) => V, inital: V ,list: ConsList<T>): V{
   let temp = reverse(list);
   return reduce(f, inital, temp);
 }
-
-let list1234 = cons(1, cons(2, cons(3, null)));
-console.log(reduceRight(
-  (x, y) => {
-    //console.log(x, y);
-    return x + y;
-  },0,list1234)
-);
 
 function filter<T>(f: (_: T) => T,list: ConsList<T>): Cons<T>{
   if(list){
@@ -192,29 +181,15 @@ function filter<T>(f: (_: T) => T,list: ConsList<T>): Cons<T>{
   }
   return null;
 }
-//list1 = 1 -> 2   list2 = 3 -> 4
-//1 - 2  
-// 
+
 function concat<T>(list1: ConsList<T>, list2: ConsList<T>): ConsList<T>{
-  //let result = list1 + list2;
-  //Cons(1,Cons(2,null))
-  //Cons(2,Cons(3,Cons(4,null)))
   if(list1){
     return cons<T>(head(list1), concat(rest(list1), list2));
   }
   return list2;
 }
 
-let list123 = cons(1, cons(2, cons(3, null)));
-
 function reverse<T>(list: ConsList<T>): ConsList<T>{
-  // let arr:T[] = [];
-  //  if(list){
-  //   arr.unshift(head(list)); 
-  //   if(rest(list)){
-  //     return reverse(rest(list));
-  //   }
-  //  }
   const arr = convertListToArray(list);
   return fromArray(arr.reverse()); 
 }
@@ -228,38 +203,6 @@ function convertListToArray<T>(node: ConsList<T>): T[] {
   }
   return values;
 }
-
-
-let supTemp = reverse(list123);
-console.log("start here");
-console.log(head(supTemp))
-console.log(head((rest(supTemp))))
-console.log(head(rest(rest(supTemp))))
-
-
-// function reduceRight(f: (length: any, text: any, index?: number) => any, inital: any ,list: ConsList<any>): number{
-//   let internalIndex = -1;
-//   function internalReduce(f: (length: any, text: any, index?: number) => number, internalInitial: number ,list: ConsList<string>):number {
-//     if(!list ) return internalInitial;
-    
-//     const currentNodeValue = head(list);
-//     internalIndex += 1;
-//     const value = f.bind(null, internalInitial, currentNodeValue, internalIndex)();
-//     return internalReduce(f, value, rest(list));
-//   }
-//   const result = internalReduce(f, inital, list);
-//   return result;
-// }
-
-// let list123 = cons(1, cons(2, cons(3, null)));
-// console.log(reduce(
-//   (x, y) => {
-//     console.log(x, y);
-//     return x + y;
-//   },
-//   0,
-//   list123
-// ));
 
 /*****************************************************************
  * Exercise 4
@@ -275,8 +218,8 @@ class List<T> {
 
   constructor(list: T[] | ConsList<T>) {
     if (list instanceof Array) {
-        //this.head
       // IMPLEMENT THIS. What goes here ??
+      this.head = fromArray(list);
     } else {
       // nullish coalescing operator
       // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Nullish_coalescing_operator
@@ -296,6 +239,12 @@ class List<T> {
   }
 
   // Add methods here:
+  // function mapList<T,V>(f:(_:T) => V, l: List<T>): List<V> {
+  //   return l ? <ListNode<V>>{
+  //     //data: 
+  //     //next:
+  //   }
+  // }
 }
 
 // /*****************************************************************
@@ -306,9 +255,9 @@ function line(s: string): any[]{
 }
 
  function lineToList(line: [number, string]): List<[number, string]>{
-  let result = new List<[number, string]>(line);
+  const result = new List<[number, string]>([line]);
   return result;
-}
+} 
 
 /*****************************************************************
  * Exercise 6
@@ -458,3 +407,9 @@ const myTree = new BinaryTreeNode(
 // //         Minizinc
 // //     ]
 // // }
+
+//let x: number = 90.5;
+
+
+
+
