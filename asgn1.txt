@@ -8,17 +8,17 @@ BEGIN {
 { 
     name = substr($1" "$2,1,length($1) + length($2))
     nationality = $NF
-    if(name ~ /(b|ch|d|g|h|jj|j|kk|k|m|n|pp|p|r|ss|s|tch|tt|t)-?(ae|ah|a|eo|eu|e|i|oe|oo|o|ui|u|wae|wa|we|wi|wo|yae|ya|ye|yeo|yo|yu)(k|n|t|l|m|p|ng)-? (b|ch|d|g|h|jj|j|kk|k|m|n|pp|p|r|ss|s|tch|tt|t)-?(ae|ah|a|eo|eu|e|i|oe|oo|o|ui|u|wae|wa|we|wi|wo|yae|ya|ye|yeo|yo|yu)(k|n|t|l|m|p|ng)-?-?(b|ch|d|g|h|jj|j|kk|k|m|n|pp|p|r|ss|s|tch|tt|t)-?(ae|ah|a|eo|eu|e|i|oe|oo|o|ui|u|wae|wa|we|wi|wo|yae|ya|ye|yeo|yo|yu)(k|n|t|l|m|p|ng)-?/){
+    if(name ~ /^(b|ch|d|g|h|jj|j|kk|k|m|n|pp|p|r|ss|s|tch|tt|t)?(ae|ah|a|eo|eu|e|i|oe|oo|o|ui|u|wae|wa|we|wi|wo|yae|ya|ye|yeo|yo|yu)(k|n|t|l|m|p|ng)? (b|ch|d|g|h|jj|j|kk|k|m|n|pp|p|r|ss|s|tch|tt|t)?(ae|ah|a|eo|eu|e|i|oe|oo|o|ui|u|wae|wa|we|wi|wo|yae|ya|ye|yeo|yo|yu)(k|n|t|l|m|p|ng)?-?(b|ch|d|g|h|jj|j|kk|k|m|n|pp|p|r|ss|s|tch|tt|t)?(ae|ah|a|eo|eu|e|i|oe|oo|o|ui|u|wae|wa|we|wi|wo|yae|ya|ye|yeo|yo|yu)(k|n|t|l|m|p|ng)?$/){
         if(nationality == "Korean"){
-            correctMatch += 1
+            correctMatch++
         }else{
-            falsePositive += 1
+            falsePositive++
         }
     }else{
         if(nationality == "Korean"){
-            falseNegative += 1
+            falseNegative++
         }else{
-            correctNonMatch += 1
+            correctNonMatch++
         }
     }
 }
